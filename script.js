@@ -1,7 +1,7 @@
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
 }
-
+//yes, this is a line only to do a new commit... then ill clean it
 
 let deltaTime = 0;
 let LastTime = 0;
