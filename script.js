@@ -1,7 +1,26 @@
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js');
+}
+
+
 let deltaTime = 0;
 let LastTime = 0;
 let velocity = 300;
 let bounces = 0;
+let dificulty = 1;
+let startGame = false;
+let selectDirection = false;
+
+const formDificulty = document.getElementById("dificulty");
+const arrowSelector = document.getElementById("arrow-selector");
+
+
+formDificulty.addEventListener("submit", (event) => {
+    event.preventDefault();
+    selectDirection = true;
+    formDificulty.style.display = "none";
+    dificulty = parseFloat(event.target.dificulty.value);
+});
 
 const keyActivated = {"w":false, "s":false, "ArrowUp":false, "ArrowDown":false};
 
@@ -127,12 +146,29 @@ document.addEventListener("keyup", (event) => {
     }
 });
 
-["dragstart", "mousedown"].forEach(evento => document.addEventListener(evento, (event) => {
-    event.preventDefault();
-}));
 
 function Game(ActualTime) {
-    if (!LastTime) {
+    if (selectDirection) {
+        startGame = false;
+        Object.values(players).forEach(player => {
+            player.html.style.top = "300px";
+            player.pendingMovement = 0;
+            player.y = 300;
+        });
+        ball1.resetToCenter();
+        arrowSelector.style.display = "block";
+        ball1.directionInDegrees = Math.floor(Math.random() * 360);
+        arrowSelector.classList.remove("rotate")
+        void arrowSelector.offsetWidth;
+        arrowSelector.style.setProperty("--deg", `${ball1.directionInDegrees + 817}deg`)
+        arrowSelector.classList.add("rotate");
+        selectDirection = false;
+        setTimeout(() => {
+            arrowSelector.style.display = "none";
+            startGame = true;
+        }, 3000);
+    }
+    if (!LastTime || !startGame) {
         LastTime = ActualTime;
         requestAnimationFrame(Game);
         return;
@@ -143,7 +179,8 @@ function Game(ActualTime) {
 
     if (deltaTime > 0.1) deltaTime = 0.1;
 
-    ball1.move(ball1.directionInDegrees, velocity + (bounces * 50), deltaTime);
+    ball1.move(ball1.directionInDegrees, velocity + (bounces * 30 * dificulty), deltaTime);
+
 
     if (ball1.y < 0) {
         bounces++;
@@ -158,11 +195,11 @@ function Game(ActualTime) {
 
     if (ball1.x < 0) { 
         players.player2.addPoint();
-        ball1.resetToCenter();
+        selectDirection = true;
     }
     if (ball1.x > (window.innerWidth - ball1.html.offsetWidth)) { 
         players.player1.addPoint();
-        ball1.resetToCenter();
+        selectDirection = true;
     }
 
     Object.values(players).forEach(player => {
@@ -208,5 +245,4 @@ function Game(ActualTime) {
 
     requestAnimationFrame(Game);
 }
-
 requestAnimationFrame(Game);

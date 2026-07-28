@@ -17,13 +17,24 @@
     right: 50px;
 }
 
-#The-ball {
+#The-ball, #arrow-selector {
     position: absolute;
-    top: 50vh;
-    left: 50vw;
+    top: calc(50vh - 15px);
+    left: calc(50vw -  15px);
     width: 30px;
     height: 30px;
     object-fit: contain;
+}
+@keyframes rotateV {
+    from {
+        rotate: 0deg;
+    }
+    to {
+        rotate: var(--deg, 1253deg);
+    }
+}
+.rotate {
+    animation: rotateV 3s cubic-bezier(0.8, 0, 0.2, 1) forwards
 }
 body {
     overflow: hidden;
@@ -36,23 +47,32 @@ body {
     transform: rotate(90deg);
     color: black;
 }
-#Game-over {
+#dificulty {
     position: absolute;
     top: 50vh;
     left: 50vw;
-    display: none;
     transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
+    gap: 15px; 
+    
     border: 3px solid white;
     background-color: rgb(65, 65, 65);
-    padding: 150px 200px;
-    font-size: 100px;
-    white-space: nowrap;
-    align-items: center;
+    padding: 30px 40px;
     font-family: Tahoma;
-    border-color: white;
-    border-width: 3px
-}
-#Game-over-text {
     color: white;
+    white-space: nowrap;
+    z-index: 100;
+}
+
+#dificulty label {
+    font-size: 20px;
+}
+
+#start {
+    padding: 8px 20px;
+    font-size: 16px;
+    cursor: pointer;
 }

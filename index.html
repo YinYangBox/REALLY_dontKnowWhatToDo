@@ -7,9 +7,12 @@
 </head>
 <body>
     <img src="BolaMUYnormal.png" id="The-ball"></img>
-    <div id="Game-over">
-        <span id="Game-over-text">Game Over</span>
-    </div>
+    <img src="arrow.png" id="arrow-selector" class="rotate">
+    <form id="dificulty">
+        <label for="dificulty-selector">What will be your dificulty?</label>
+        <input type="range" id="dificulty-selector" name="dificulty" min="1" max="4" step="0.1" value="2">
+        <button type="submit" id="start">Start</button>
+    </form>
     <div id="player1">
         <span id="player1-score" class="score">0</span>
     </div>
