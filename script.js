@@ -2,6 +2,7 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
 }
 //i didn't clean it, it will stay here for ever >:) for the people that are reading(no one) my commit for correct my other commit it was wronge it is orthographic NOT ortographic, silly me
+// for my friends that don't believe me this proyect it's made by Chao Yang Wang, fuck you
 
 let deltaTime = 0;
 let LastTime = 0;
