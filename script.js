@@ -75,8 +75,18 @@ function checkCollision(obj1, obj2) {
     };
 }
 
+function getRandomAngleforBall() {
+       do {
+    angle = Math.floor(Math.random() * 360);
+    }
+       while (
+    (angle >= 80 && angle <= 100) || 
+    (angle >= 260 && angle <= 280));
+    return angulo;
+}
+
 class ball {
-    constructor(htmlID, degree = Math.floor(Math.random() * 360)) {
+    constructor(htmlID, degree =getRandomAngleforBall()) {
         this.html = document.getElementById(htmlID);
         this.directionInDegrees = degree;
         this.x = this.html.offsetLeft;
