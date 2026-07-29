@@ -1,8 +1,8 @@
+//i didn't clean it, it will stay here for ever >:) for the people that are reading(no one) my commit for correct my other commit it was wronge it is orthographic NOT ortographic, silly me
+// for my friends that don't believe me this proyect it's made by Chao Yang Wang, fuck you
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
 }
-//i didn't clean it, it will stay here for ever >:) for the people that are reading(no one) my commit for correct my other commit it was wronge it is orthographic NOT ortographic, silly me
-// for my friends that don't believe me this proyect it's made by Chao Yang Wang, fuck you
 
 let deltaTime = 0;
 let LastTime = 0;
@@ -10,35 +10,51 @@ let velocity = 300;
 let bounces = 0;
 let dificulty = 1;
 let startGame = false;
+let mode;
 let selectDirection = false;
 
 const formDificulty = document.getElementById("dificulty");
+const formMode = document.getElementById("mode");
 const arrowSelector = document.getElementById("arrow-selector");
 
 
+document.addEventListener("dbclick", (event) => {
+    event.preventDefault();
+});
+formMode.addEventListener("submit", (event) => {
+    event.preventDefault();
+    mode = event.submitter.id === 'one-player' ? 1 : 2;
+    formMode.style.display = "none";
+    formDificulty.style.display = "flex";
+})
 formDificulty.addEventListener("submit", (event) => {
     event.preventDefault();
     selectDirection = true;
     formDificulty.style.display = "none";
     dificulty = parseFloat(event.target.dificulty.value);
+    if (mode === 1) {
+        players.player2 = new BotPlayer("player2", 120*dificulty, 270);
+    } else {
+        players.player2 = new player("player2", {ArrowUp: -800, ArrowDown: 800}, 270);
+    }
 });
 
 const keyActivated = {"w":false, "s":false, "ArrowUp":false, "ArrowDown":false};
 
 function bounds(htmlObject) {
-  const left = htmlObject.offsetLeft;
-  const top = htmlObject.offsetTop;
-  const width = htmlObject.offsetWidth;
-  const height = htmlObject.offsetHeight;
+    const left = htmlObject.offsetLeft;
+    const top = htmlObject.offsetTop;
+    const width = htmlObject.offsetWidth;
+    const height = htmlObject.offsetHeight;
 
-  return {
-    left: left,
-    top: top,
-    width: width,
-    height: height,
-    right: left + width,
-    bottom: top + height
-  };
+    return {
+        left: left,
+        top: top,
+        width: width,
+        height: height,
+        right: left + width,
+        bottom: top + height
+    };
 }
 
 function checkCollision(obj1, obj2) {
@@ -82,7 +98,7 @@ function getRandomAngleforBall() {
        while (
     (angle >= 80 && angle <= 100) || 
     (angle >= 260 && angle <= 280));
-    return angulo;
+    return angle;
 }
 
 class ball {
@@ -121,7 +137,7 @@ class player {
         this.score = 0;
     }
 
-    UpdateMovement() {
+    UpdateMovement(ball, deltaTime) {
         this.pendingMovement = 0;
         Object.keys(this.interactiveKeys).forEach(movement => {
             if (keyActivated[movement] === true) {
@@ -138,11 +154,51 @@ class player {
     }
 }
 
+class BotPlayer extends player {
+    constructor(htmlID, baseSpeed = 350, initialTop = undefined) {
+        super(htmlID, {}, initialTop);
+        
+        this.baseSpeed = baseSpeed;
+        this.reactionTimer = 0;
+        this.isWaiting = false;
+        this.deadZone = 15;
+    }
+
+    startReaction(dificulty) {
+        this.isWaiting = true;
+        this.reactionTimer = Math.max(0.05, 0.5 - (dificulty*0.1));
+    }
+
+    UpdateMovement(ball, deltaTime) {
+        if (ball.directionInDegrees < 270 && ball.directionInDegrees > 90) {
+            return;
+        }
+        if (this.isWaiting) {
+            this.reactionTimer -= deltaTime;
+            if (this.reactionTimer <= 0) {
+                this.isWaiting = false; 
+            }
+            this.pendingMovement = 0;
+            return;
+        }
+
+        const ballCenter = ball.y + (ball.html.offsetHeight / 2);
+        const botCenter = this.y + (this.html.offsetHeight / 2);
+
+        if (Math.abs(ballCenter - botCenter) > this.deadZone) {
+            this.pendingMovement = (ballCenter < botCenter) ? -this.baseSpeed : this.baseSpeed;
+        } else {
+            this.pendingMovement = 0;
+        }
+    }
+}
+
+
 const ball1 = new ball("The-ball");
 
 const players = {
     player1: new player("player1", {w: -800, s: 800}, 270),
-    player2: new player("player2", {ArrowUp: -800, ArrowDown: 800}, 270) 
+    player2: new player("player2", {ArrowUp: -800, ArrowDown: 800}, 270),
 };
 
 document.addEventListener("keydown", (event) => {
@@ -168,7 +224,7 @@ function Game(ActualTime) {
         });
         ball1.resetToCenter();
         arrowSelector.style.display = "block";
-        ball1.directionInDegrees = Math.floor(Math.random() * 360);
+        ball1.directionInDegrees = getRandomAngleforBall();
         arrowSelector.classList.remove("rotate")
         void arrowSelector.offsetWidth;
         arrowSelector.style.setProperty("--deg", `${ball1.directionInDegrees + 817}deg`)
@@ -190,7 +246,7 @@ function Game(ActualTime) {
 
     if (deltaTime > 0.1) deltaTime = 0.1;
 
-    ball1.move(ball1.directionInDegrees, velocity + (bounces * 30 * dificulty), deltaTime);
+    ball1.move(ball1.directionInDegrees, velocity + (200*(1-Math.exp(-0.12*bounces)) * dificulty), deltaTime);
 
 
     if (ball1.y < 0) {
@@ -214,7 +270,7 @@ function Game(ActualTime) {
     }
 
     Object.values(players).forEach(player => {
-        player.UpdateMovement();
+        player.UpdateMovement(ball1, deltaTime);
         
         player.y += player.pendingMovement * deltaTime;
 

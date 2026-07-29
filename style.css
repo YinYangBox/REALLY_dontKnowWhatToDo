@@ -47,7 +47,7 @@ body {
     transform: rotate(90deg);
     color: black;
 }
-#dificulty {
+#dificulty , #mode{
     position: absolute;
     top: 50vh;
     left: 50vw;
@@ -66,12 +66,14 @@ body {
     white-space: nowrap;
     z-index: 100;
 }
-
+#dificulty {
+    display: none;
+}
 #dificulty label {
     font-size: 20px;
 }
 
-#start {
+#start, #one-player, #two-players{
     padding: 8px 20px;
     font-size: 16px;
     cursor: pointer;
