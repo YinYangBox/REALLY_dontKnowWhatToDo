@@ -1,7 +1,7 @@
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js');
 }
-//yes, this is a line only to do a new commit... then ill clean it
+//i didn't clean it, it will stay here for ever >:) for the people that are reading(no one) my commit for correct my other commit it was wronge it is orthographic NOT ortographic, silly me
 
 let deltaTime = 0;
 let LastTime = 0;
